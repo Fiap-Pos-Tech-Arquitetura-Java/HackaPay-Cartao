@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "cpf": {
+      "type": "string"
+    },
+    "limite": {
+      "type": "integer"
+    },
+    "numero": {
+      "type": "string"
+    },
+    "data_validade": {
+      "type": "string"
+    },
+    "cvv": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "cpf",
+    "limite",
+    "numero",
+    "data_validade",
+    "cvv"
+  ]
+}

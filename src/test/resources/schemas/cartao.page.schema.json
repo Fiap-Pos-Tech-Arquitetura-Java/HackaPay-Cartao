@@ -1,0 +1,212 @@
+
+
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "cpf": {
+              "type": "string"
+            },
+            "limite": {
+              "type": "integer"
+            },
+            "numero": {
+              "type": "string"
+            },
+            "data_validade": {
+              "type": "string"
+            },
+            "cvv": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "cpf": {
+              "type": "string"
+            },
+            "limite": {
+              "type": "integer"
+            },
+            "numero": {
+              "type": "string"
+            },
+            "data_validade": {
+              "type": "string"
+            },
+            "cvv": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "cpf",
+            "limite",
+            "numero",
+            "data_validade",
+            "cvv"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "cpf": {
+              "type": "string"
+            },
+            "nome": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "telefone": {
+              "type": "string"
+            },
+            "rua": {
+              "type": "string"
+            },
+            "cidade": {
+              "type": "string"
+            },
+            "estado": {
+              "type": "string"
+            },
+            "cep": {
+              "type": "string"
+            },
+            "pais": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "cpf",
+            "limite",
+            "numero",
+            "data_validade",
+            "cvv"
+          ]
+        }
+      ]
+    },
+    "pageable": {
+      "type": "object",
+      "properties": {
+        "pageNumber": {
+          "type": "integer"
+        },
+        "pageSize": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "object",
+          "properties": {
+            "unsorted": {
+              "type": "boolean"
+            },
+            "sorted": {
+              "type": "boolean"
+            },
+            "empty": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "unsorted",
+            "sorted",
+            "empty"
+          ]
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "unpaged": {
+          "type": "boolean"
+        },
+        "paged": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "pageNumber",
+        "pageSize",
+        "sort",
+        "offset",
+        "unpaged",
+        "paged"
+      ]
+    },
+    "totalPages": {
+      "type": "integer"
+    },
+    "totalElements": {
+      "type": "integer"
+    },
+    "last": {
+      "type": "boolean"
+    },
+    "numberOfElements": {
+      "type": "integer"
+    },
+    "first": {
+      "type": "boolean"
+    },
+    "size": {
+      "type": "integer"
+    },
+    "number": {
+      "type": "integer"
+    },
+    "sort": {
+      "type": "object",
+      "properties": {
+        "unsorted": {
+          "type": "boolean"
+        },
+        "sorted": {
+          "type": "boolean"
+        },
+        "empty": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "unsorted",
+        "sorted",
+        "empty"
+      ]
+    },
+    "empty": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "content",
+    "pageable",
+    "totalPages",
+    "totalElements",
+    "last",
+    "numberOfElements",
+    "first",
+    "size",
+    "number",
+    "sort",
+    "empty"
+  ]
+}
+
