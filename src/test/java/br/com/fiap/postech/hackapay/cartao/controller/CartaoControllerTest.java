@@ -3,6 +3,7 @@ package br.com.fiap.postech.hackapay.cartao.controller;
 import br.com.fiap.postech.hackapay.cartao.entities.Cartao;
 import br.com.fiap.postech.hackapay.cartao.helper.CartaoHelper;
 import br.com.fiap.postech.hackapay.cartao.services.CartaoService;
+import br.com.fiap.postech.hackapay.security.SecurityHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,12 +32,14 @@ class CartaoControllerTest {
     private MockMvc mockMvc;
     @Mock
     private CartaoService cartaoService;
+    @Mock
+    private SecurityHelper securityHelper;
     private AutoCloseable mock;
 
     @BeforeEach
     void setUp() {
         mock = MockitoAnnotations.openMocks(this);
-        CartaoController cartaoController = new CartaoController(cartaoService);
+        CartaoController cartaoController = new CartaoController(cartaoService, securityHelper);
         mockMvc = MockMvcBuilders.standaloneSetup(cartaoController).build();
     }
 
@@ -60,7 +63,7 @@ class CartaoControllerTest {
             mockMvc.perform(
                             post(CARTAO).contentType(MediaType.APPLICATION_JSON)
                                     .content(asJsonString(cartao)))
-                    .andExpect(status().isCreated());
+                    .andExpect(status().isOk());
             // Assert
             verify(cartaoService, times(1)).save(any(Cartao.class));
         }

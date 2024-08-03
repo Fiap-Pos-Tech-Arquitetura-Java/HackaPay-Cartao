@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface CartaoService {
-    Cartao save(Cartao cartao);
+    Cartao save(String token, Cartao cartao);
 
     Page<Cartao> findAll(Pageable pageable, Cartao cartao);
 
@@ -16,4 +16,6 @@ public interface CartaoService {
     Cartao update(UUID id, Cartao cartao);
 
     void delete(UUID id);
+
+    void atualizaLimiteCartao(Double valor, Cartao cartaoDTO);
 }

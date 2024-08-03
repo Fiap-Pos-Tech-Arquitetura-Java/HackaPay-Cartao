@@ -17,7 +17,7 @@ public class Cartao {
     @Column(name = "cpf", nullable = false)
     private String cpf;
     @Column(name = "limite", nullable = false)
-    private Integer limite;
+    private Double limite;
     @Column(name = "numero", nullable = false)
     private String numero;
     @Column(name = "data_validade", nullable = false)
@@ -30,7 +30,7 @@ public class Cartao {
         super();
     }
 
-    public Cartao(String cpf, Integer limite, String numero, String dataValidade, String cvv) {
+    public Cartao(String cpf, Double limite, String numero, String dataValidade, String cvv) {
         this.cpf = cpf;
         this.limite = limite;
         this.numero = numero;
@@ -66,11 +66,11 @@ public class Cartao {
         this.cpf = cpf;
     }
 
-    public Integer getLimite() {
+    public Double getLimite() {
         return limite;
     }
 
-    public void setLimite(Integer limite) {
+    public void setLimite(Double limite) {
         this.limite = limite;
     }
 

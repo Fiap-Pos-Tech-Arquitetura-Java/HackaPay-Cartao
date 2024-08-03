@@ -9,5 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface CartaoRepository extends JpaRepository<Cartao, UUID> {
-    Optional<Cartao> findByCpf(String cpf);
+    Integer countByCpf(String cpf);
+
+    Optional<Cartao> findByNumero(String numero);
 }

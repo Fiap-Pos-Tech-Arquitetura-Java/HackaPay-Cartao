@@ -2,6 +2,7 @@ package br.com.fiap.postech.hackapay.cartao.services;
 
 import br.com.fiap.postech.hackapay.cartao.entities.Cartao;
 import br.com.fiap.postech.hackapay.cartao.helper.CartaoHelper;
+import br.com.fiap.postech.hackapay.cartao.integration.ClienteIntegracao;
 import br.com.fiap.postech.hackapay.cartao.repository.CartaoRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -30,12 +31,15 @@ class CartaoServiceTest {
     @Mock
     private CartaoRepository cartaoRepository;
 
+    @Mock
+    private ClienteIntegracao clienteIntegracao;
+
     private AutoCloseable mock;
 
     @BeforeEach
     void setUp() {
         mock = MockitoAnnotations.openMocks(this);
-        cartaoService = new CartaoServiceImpl(cartaoRepository);
+        cartaoService = new CartaoServiceImpl(cartaoRepository, clienteIntegracao);
     }
 
     @AfterEach
@@ -62,16 +66,16 @@ class CartaoServiceTest {
         }
 
         @Test
-        void deveGerarExcecao_QuandoCadastrarCartao_cpfExistente() {
+        void deveGerarExcecao_QuandoCadastrarCartao_cpfTemDoisCartoes() {
             // Arrange
             var cartao = CartaoHelper.getCartao(true);
-            when(cartaoRepository.findByCpf(cartao.getCpf())).thenReturn(Optional.of(cartao));
+            when(cartaoRepository.countByCpf(cartao.getCpf())).thenReturn(2);
             // Act
             assertThatThrownBy(() -> cartaoService.save(cartao))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("Já existe um cartao cadastrado com esse cpf.");
+                    .hasMessage("um Cliente pode ter no maximo 2 cartoes.");
             // Assert
-            verify(cartaoRepository, times(1)).findByCpf(anyString());
+            verify(cartaoRepository, times(1)).countByCpf(anyString());
             verify(cartaoRepository, never()).save(any(Cartao.class));
         }
     }

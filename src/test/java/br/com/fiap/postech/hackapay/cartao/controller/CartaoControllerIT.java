@@ -58,9 +58,8 @@ public class CartaoControllerIT {
             .when()
                 .post(CARTAO)
             .then()
-                .statusCode(HttpStatus.CREATED.value())
+                .statusCode(HttpStatus.OK.value())
                 .body(matchesJsonSchemaInClasspath("schemas/cartao.schema.json"));
-            // TODO VERIFICAR A OBRIGATORIEDADE DO ID
         }
 
         @Test
