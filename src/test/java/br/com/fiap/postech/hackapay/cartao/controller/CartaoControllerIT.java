@@ -152,7 +152,7 @@ public class CartaoControllerIT {
             when(userDetailsService.loadUserByUsername(anyString())).thenReturn(userDetails);
             var cartao = new Cartao(
                     "52816804046",
-                    1002,
+                    1002D,
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true)
@@ -206,7 +206,7 @@ public class CartaoControllerIT {
             when(userDetailsService.loadUserByUsername(anyString())).thenReturn(userDetails);
             var cartao = new Cartao(
                     "ccc@ddd.com",
-                    1003,
+                    1003D,
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true)

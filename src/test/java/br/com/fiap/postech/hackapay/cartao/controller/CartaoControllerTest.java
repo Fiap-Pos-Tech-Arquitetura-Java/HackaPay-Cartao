@@ -58,28 +58,28 @@ class CartaoControllerTest {
         void devePermitirCadastrarCartao() throws Exception {
             // Arrange
             var cartao = CartaoHelper.getCartao(false);
-            when(cartaoService.save(any(Cartao.class))).thenAnswer(r -> r.getArgument(0));
+            when(cartaoService.save(anyString(), any(Cartao.class))).thenAnswer(r -> r.getArgument(0));
             // Act
             mockMvc.perform(
                             post(CARTAO).contentType(MediaType.APPLICATION_JSON)
                                     .content(asJsonString(cartao)))
                     .andExpect(status().isOk());
             // Assert
-            verify(cartaoService, times(1)).save(any(Cartao.class));
+            verify(cartaoService, times(1)).save(anyString(), any(Cartao.class));
         }
 
         @Test
         void deveGerarExcecao_QuandoRegistrarCartao_RequisicaoXml() throws Exception {
             // Arrange
             var cartao = CartaoHelper.getCartao(false);
-            when(cartaoService.save(any(Cartao.class))).thenAnswer(r -> r.getArgument(0));
+            when(cartaoService.save(anyString(), any(Cartao.class))).thenAnswer(r -> r.getArgument(0));
             // Act
             mockMvc.perform(
                             post("/cartao").contentType(MediaType.APPLICATION_XML)
                                     .content(asJsonString(cartao)))
                     .andExpect(status().isUnsupportedMediaType());
             // Assert
-            verify(cartaoService, never()).save(any(Cartao.class));
+            verify(cartaoService, never()).save(anyString(), any(Cartao.class));
         }
     }
     @Nested

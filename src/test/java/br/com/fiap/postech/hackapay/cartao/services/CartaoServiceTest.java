@@ -55,7 +55,7 @@ class CartaoServiceTest {
             var cartao = CartaoHelper.getCartao(false);
             when(cartaoRepository.save(any(Cartao.class))).thenAnswer(r -> r.getArgument(0));
             // Act
-            var cartaoSalvo = cartaoService.save(cartao);
+            var cartaoSalvo = cartaoService.save(anyString(), cartao);
             // Assert
             assertThat(cartaoSalvo)
                     .isInstanceOf(Cartao.class)
@@ -71,7 +71,7 @@ class CartaoServiceTest {
             var cartao = CartaoHelper.getCartao(true);
             when(cartaoRepository.countByCpf(cartao.getCpf())).thenReturn(2);
             // Act
-            assertThatThrownBy(() -> cartaoService.save(cartao))
+            assertThatThrownBy(() -> cartaoService.save(anyString(), cartao))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("um Cliente pode ter no maximo 2 cartoes.");
             // Assert
@@ -148,7 +148,7 @@ class CartaoServiceTest {
             );
             var novoCartao = new Cartao(
                     cartao.getCpf(),
-                    1001,
+                    1001D,
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true)
@@ -182,7 +182,7 @@ class CartaoServiceTest {
             );
             var novoCartao = new Cartao(
                     cartao.getCpf(),
-                    1001,
+                    1001D,
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true)
