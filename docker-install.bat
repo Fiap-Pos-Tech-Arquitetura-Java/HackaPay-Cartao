@@ -1,2 +1,2 @@
 docker pull postgres:latest
-docker run --name hackapay-standalone-cartao-db -p 5432:5432 -e PGPORT=5432 -e POSTGRES_USER=hackaPay -e POSTGRES_PASSWORD=hackaPayCartao -e POSTGRES_DB=hackapay-cartao-db -d postgres
+docker run --name hackapay-standalone-cartao-db -p 5434:5434 -e PGPORT=5434 -e POSTGRES_USER=hackaPay -e POSTGRES_PASSWORD=hackaPayCartao -e POSTGRES_DB=hackapay-cartao-db -d postgres
