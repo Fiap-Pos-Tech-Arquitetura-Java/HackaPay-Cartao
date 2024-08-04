@@ -2,6 +2,8 @@ package br.com.fiap.postech.hackapay.cartao.controller;
 
 import br.com.fiap.postech.hackapay.cartao.entities.Cartao;
 import br.com.fiap.postech.hackapay.cartao.helper.CartaoHelper;
+import br.com.fiap.postech.hackapay.cartao.helper.ClienteHelper;
+import br.com.fiap.postech.hackapay.cartao.integration.ClienteIntegracao;
 import br.com.fiap.postech.hackapay.cartao.services.CartaoService;
 import br.com.fiap.postech.hackapay.security.SecurityHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +36,8 @@ class CartaoControllerTest {
     private CartaoService cartaoService;
     @Mock
     private SecurityHelper securityHelper;
+    @Mock
+    private ClienteIntegracao clienteIntegracao;
     private AutoCloseable mock;
 
     @BeforeEach
@@ -58,7 +62,10 @@ class CartaoControllerTest {
         void devePermitirCadastrarCartao() throws Exception {
             // Arrange
             var cartao = CartaoHelper.getCartao(false);
-            when(cartaoService.save(anyString(), any(Cartao.class))).thenAnswer(r -> r.getArgument(0));
+            var cliente = ClienteHelper.getCliente();
+            when(cartaoService.save(anyString(), any(Cartao.class))).thenAnswer(r -> r.getArgument(1));
+            when(clienteIntegracao.getCliente(anyString(), anyString())).thenReturn(cliente);
+            when(securityHelper.getToken()).thenReturn("token");
             // Act
             mockMvc.perform(
                             post(CARTAO).contentType(MediaType.APPLICATION_JSON)

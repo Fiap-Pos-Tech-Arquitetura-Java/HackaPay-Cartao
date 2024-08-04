@@ -8,7 +8,7 @@ public class CartaoHelper {
     public static Cartao getCartao(boolean geraId) {
         var cartao = new Cartao(
                 "25310413030",
-                1000,
+                1000D,
                 "4417810025751018",
                 "12/30",
                 "234"

@@ -2,6 +2,8 @@ package br.com.fiap.postech.hackapay.cartao.services;
 
 import br.com.fiap.postech.hackapay.cartao.entities.Cartao;
 import br.com.fiap.postech.hackapay.cartao.helper.CartaoHelper;
+import br.com.fiap.postech.hackapay.cartao.helper.ClienteHelper;
+import br.com.fiap.postech.hackapay.cartao.integration.ClienteIntegracao;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Nested;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,6 +20,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -25,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class CartaoServiceIT {
     @Autowired
     private CartaoService cartaoService;
+    @MockBean
+    private ClienteIntegracao clienteIntegracao;
 
     @Nested
     class CadastrarCartao {
@@ -32,8 +39,11 @@ public class CartaoServiceIT {
         void devePermitirCadastrarCartao() {
             // Arrange
             var cartao = CartaoHelper.getCartao(false);
+            var cliente = ClienteHelper.getCliente();
+            when(clienteIntegracao.getCliente(anyString(), anyString())).thenReturn(cliente);
+            var token = "token";
             // Act
-            var cartaoSalvo = cartaoService.save(cartao);
+            var cartaoSalvo = cartaoService.save(token, cartao);
             // Assert
             assertThat(cartaoSalvo)
                     .isInstanceOf(Cartao.class)

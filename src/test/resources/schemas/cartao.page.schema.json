@@ -17,7 +17,7 @@
               "type": "string"
             },
             "limite": {
-              "type": "integer"
+              "type": "number"
             },
             "numero": {
               "type": "string"
@@ -40,7 +40,7 @@
               "type": "string"
             },
             "limite": {
-              "type": "integer"
+              "type": "number"
             },
             "numero": {
               "type": "string"

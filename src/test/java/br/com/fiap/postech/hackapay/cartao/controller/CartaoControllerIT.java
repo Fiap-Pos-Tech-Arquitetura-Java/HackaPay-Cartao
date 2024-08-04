@@ -3,13 +3,16 @@ package br.com.fiap.postech.hackapay.cartao.controller;
 
 import br.com.fiap.postech.hackapay.cartao.entities.Cartao;
 import br.com.fiap.postech.hackapay.cartao.helper.CartaoHelper;
+import br.com.fiap.postech.hackapay.cartao.helper.ClienteHelper;
 import br.com.fiap.postech.hackapay.cartao.helper.UserHelper;
+import br.com.fiap.postech.hackapay.cartao.integration.ClienteIntegracao;
 import br.com.fiap.postech.hackapay.security.UserDetailsServiceImpl;
 import io.restassured.RestAssured;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,6 +42,9 @@ public class CartaoControllerIT {
     @MockBean
     private UserDetailsServiceImpl userDetailsService;
 
+    @MockBean
+    private ClienteIntegracao clienteIntegracao;
+
     @BeforeEach
     void setup() {
         RestAssured.port = port;
@@ -51,7 +57,9 @@ public class CartaoControllerIT {
         void devePermitirCadastrarCartao() {
             var cartao = CartaoHelper.getCartao(false);
             var userDetails = UserHelper.getUserDetails("umUsuarioQualquer");
+            var cliente = ClienteHelper.getCliente();
             when(userDetailsService.loadUserByUsername(anyString())).thenReturn(userDetails);
+            when(clienteIntegracao.getCliente(anyString(), anyString())).thenReturn(cliente);
             given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE).body(cartao)
                     .header(HttpHeaders.AUTHORIZATION, UserHelper.getToken(userDetails.getUsername()))

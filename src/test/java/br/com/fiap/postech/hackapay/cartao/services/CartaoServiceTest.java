@@ -2,6 +2,7 @@ package br.com.fiap.postech.hackapay.cartao.services;
 
 import br.com.fiap.postech.hackapay.cartao.entities.Cartao;
 import br.com.fiap.postech.hackapay.cartao.helper.CartaoHelper;
+import br.com.fiap.postech.hackapay.cartao.helper.ClienteHelper;
 import br.com.fiap.postech.hackapay.cartao.integration.ClienteIntegracao;
 import br.com.fiap.postech.hackapay.cartao.repository.CartaoRepository;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -53,7 +54,10 @@ class CartaoServiceTest {
         void devePermitirCadastrarCartao() {
             // Arrange
             var cartao = CartaoHelper.getCartao(false);
+            var cliente = ClienteHelper.getCliente();
             when(cartaoRepository.save(any(Cartao.class))).thenAnswer(r -> r.getArgument(0));
+            when(clienteIntegracao.getCliente(anyString(), anyString())).thenReturn(cliente);
+
             // Act
             var cartaoSalvo = cartaoService.save(anyString(), cartao);
             // Assert
@@ -63,6 +67,21 @@ class CartaoServiceTest {
             assertThat(cartaoSalvo.getNumero()).isEqualTo(cartao.getNumero());
             assertThat(cartaoSalvo.getId()).isNotNull();
             verify(cartaoRepository, times(1)).save(any(Cartao.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoCadastrarCartao_clienteNaoExiste() {
+            // Arrange
+            var cartao = CartaoHelper.getCartao(true);
+            when(cartaoRepository.countByCpf(cartao.getCpf())).thenReturn(0);
+            when(clienteIntegracao.getCliente(anyString(), anyString())).thenReturn(null);
+            // Act
+            assertThatThrownBy(() -> cartaoService.save(anyString(), cartao))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("Cliente nao cadastrado.");
+            // Assert
+            verify(cartaoRepository, times(1)).countByCpf(anyString());
+            verify(cartaoRepository, never()).save(any(Cartao.class));
         }
 
         @Test
@@ -275,6 +294,95 @@ class CartaoServiceTest {
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Não é possível alterar o cpf de um cartao.");
             verify(cartaoRepository, times(1)).findById(any(UUID.class));
+            verify(cartaoRepository, never()).save(any(Cartao.class));
+        }
+    }
+
+    @Nested
+    class AtualizarLimite {
+        @Test
+        void devePermitirAlterarLimiteCartao() {
+            // Arrange
+            var cartao = CartaoHelper.getCartao(true);
+            when(cartaoRepository.findByNumero(cartao.getNumero())).thenReturn(Optional.of(cartao));
+            when(cartaoRepository.save(any(Cartao.class))).thenAnswer(r -> r.getArgument(0));
+            // Act
+            cartaoService.atualizaLimiteCartao(100D, cartao);
+            // Assert
+            assertThat(cartao.getLimite()).isEqualTo(900D);
+
+            verify(cartaoRepository, times(1)).findByNumero(anyString());
+            verify(cartaoRepository, times(1)).save(any(Cartao.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoAlterarLimiteCartao_cartaoNaoExiste() {
+            // Arrange
+            var cartao = CartaoHelper.getCartao(true);
+            when(cartaoRepository.findByNumero(cartao.getNumero())).thenReturn(Optional.empty());
+            // Act && Assert
+            assertThatThrownBy(() -> cartaoService.atualizaLimiteCartao(100D, cartao))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("cartao nao encontrado");
+            verify(cartaoRepository, times(1)).findByNumero(anyString());
+            verify(cartaoRepository, never()).save(any(Cartao.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoAlterarLimiteCartao_cpfNaoConfere() {
+            // Arrange
+            var cartao = CartaoHelper.getCartao(true);
+            var cartaoParam = CartaoHelper.getCartao(true);
+            cartaoParam.setCpf(cartaoParam.getCpf() + "x");
+            when(cartaoRepository.findByNumero(cartao.getNumero())).thenReturn(Optional.of(cartaoParam));
+            // Act && Assert
+            assertThatThrownBy(() -> cartaoService.atualizaLimiteCartao(100D, cartao))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("cpf do cartao nao confere");
+            verify(cartaoRepository, times(1)).findByNumero(anyString());
+            verify(cartaoRepository, never()).save(any(Cartao.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoAlterarLimiteCartao_cvvNaoConfere() {
+            // Arrange
+            var cartao = CartaoHelper.getCartao(true);
+            var cartaoParam = CartaoHelper.getCartao(true);
+            cartaoParam.setCvv(cartaoParam.getCvv() + "x");
+            when(cartaoRepository.findByNumero(cartao.getNumero())).thenReturn(Optional.of(cartaoParam));
+            // Act && Assert
+            assertThatThrownBy(() -> cartaoService.atualizaLimiteCartao(100D, cartao))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("cvv do cartao nao confere");
+            verify(cartaoRepository, times(1)).findByNumero(anyString());
+            verify(cartaoRepository, never()).save(any(Cartao.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoAlterarLimiteCartao_dataValidadeNaoConfere() {
+            // Arrange
+            var cartao = CartaoHelper.getCartao(true);
+            var cartaoParam = CartaoHelper.getCartao(true);
+            cartaoParam.setDataValidade(cartaoParam.getDataValidade() + "x");
+            when(cartaoRepository.findByNumero(cartao.getNumero())).thenReturn(Optional.of(cartaoParam));
+            // Act && Assert
+            assertThatThrownBy(() -> cartaoService.atualizaLimiteCartao(100D, cartao))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("data de validade do cartao nao confere");
+            verify(cartaoRepository, times(1)).findByNumero(anyString());
+            verify(cartaoRepository, never()).save(any(Cartao.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoAlterarLimiteCartao_limiteInsuficiente() {
+            // Arrange
+            var cartao = CartaoHelper.getCartao(true);
+            when(cartaoRepository.findByNumero(cartao.getNumero())).thenReturn(Optional.of(cartao));
+            // Act && Assert
+            assertThatThrownBy(() -> cartaoService.atualizaLimiteCartao(10000D, cartao))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("nao ha mais limite disponivel no cartao.");
+            verify(cartaoRepository, times(1)).findByNumero(anyString());
             verify(cartaoRepository, never()).save(any(Cartao.class));
         }
     }
