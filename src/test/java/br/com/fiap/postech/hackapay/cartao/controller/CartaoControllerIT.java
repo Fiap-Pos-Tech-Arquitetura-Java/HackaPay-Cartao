@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 public class CartaoControllerIT {
 
-    public static final String CARTAO = "/hackapay/cartao";
+    public static final String CARTAO = "/api/cartao";
     @LocalServerPort
     private int port;
 
