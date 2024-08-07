@@ -76,6 +76,42 @@ class CartaoControllerTest {
         }
 
         @Test
+        void deveGerarExcecao_QuandoRegistrarCartao_clienteNaoCadastrado() throws Exception {
+            // Arrange
+            var cartao = CartaoHelper.getCartao(false);
+            when(cartaoService.save(anyString(), any(Cartao.class))).thenThrow(
+                    new IllegalStateException("Cliente nao cadastrado.")
+            );
+            when(securityHelper.getToken()).thenReturn("token");
+            // Act
+            mockMvc.perform(
+                            post(CARTAO).contentType(MediaType.APPLICATION_JSON)
+                                    .content(asJsonString(cartao)))
+                    .andExpect(status().is5xxServerError());
+            // Assert
+            verify(cartaoService, times(1)).save(anyString(), any(Cartao.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoRegistrarCartao_maisQueDoisCartoes() throws Exception {
+            // Arrange
+            var cartao = CartaoHelper.getCartao(false);
+            var cliente = ClienteHelper.getCliente();
+
+            when(cartaoService.save(anyString(), any(Cartao.class))).thenThrow(
+                    new IllegalArgumentException("um Cliente pode ter no maximo 2 cartoes.")
+            );
+            when(securityHelper.getToken()).thenReturn("token");
+            // Act
+            mockMvc.perform(
+                            post(CARTAO).contentType(MediaType.APPLICATION_JSON)
+                                    .content(asJsonString(cartao)))
+                    .andExpect(status().isForbidden());
+            // Assert
+            verify(cartaoService, times(1)).save(anyString(), any(Cartao.class));
+        }
+
+        @Test
         void deveGerarExcecao_QuandoRegistrarCartao_RequisicaoXml() throws Exception {
             // Arrange
             var cartao = CartaoHelper.getCartao(false);
@@ -221,6 +257,59 @@ class CartaoControllerTest {
                     .andExpect(status().isBadRequest());
             // Assert
             verify(cartaoService, times(1)).delete(cartao.getId());
+        }
+    }
+
+    @Nested
+    class AtualizaLimiteCartao {
+        @Test
+        void devePermitirAtualizarLimiteCartao() throws Exception {
+            // Arrange
+            var valor = 100.0;
+            var cartao = CartaoHelper.getCartao(false);
+            var cliente = ClienteHelper.getCliente();
+            doNothing().when(cartaoService).atualizaLimiteCartao(anyDouble(), any(Cartao.class));
+            when(securityHelper.getToken()).thenReturn("token");
+            // Act
+            mockMvc.perform(
+                            post(CARTAO + "/atualizaLimiteCartao/" + valor).contentType(MediaType.APPLICATION_JSON)
+                                    .content(asJsonString(cartao)))
+                    .andExpect(status().isAccepted());
+            // Assert
+            verify(cartaoService, times(1)).atualizaLimiteCartao(anyDouble(), any(Cartao.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoAtualizarLimiteCartao_cpfCartaoNaoConfere() throws Exception {
+            // Arrange
+            var valor = 100.0;
+            var cartao = CartaoHelper.getCartao(false);
+            doThrow(
+                    new IllegalArgumentException("cpf do cartao nao confere")
+            ).when(cartaoService).atualizaLimiteCartao(anyDouble(), any(Cartao.class));
+            when(securityHelper.getToken()).thenReturn("token");
+            // Act
+            mockMvc.perform(
+                            post(CARTAO + "/atualizaLimiteCartao/" + valor).contentType(MediaType.APPLICATION_JSON)
+                                    .content(asJsonString(cartao)))
+                    .andExpect(status().isBadRequest());
+            // Assert
+            verify(cartaoService, times(1)).atualizaLimiteCartao(anyDouble(), any(Cartao.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoAtualizarLimiteCartao_RequisicaoXml() throws Exception {
+            // Arrange
+            var valor = 100.0;
+            var cartao = CartaoHelper.getCartao(false);
+            when(cartaoService.save(anyString(), any(Cartao.class))).thenAnswer(r -> r.getArgument(0));
+            // Act
+            mockMvc.perform(
+                            post(CARTAO + "/atualizaLimiteCartao/" + valor).contentType(MediaType.APPLICATION_XML)
+                                    .content(asJsonString(cartao)))
+                    .andExpect(status().isUnsupportedMediaType());
+            // Assert
+            verify(cartaoService, never()).save(anyString(), any(Cartao.class));
         }
     }
 }
