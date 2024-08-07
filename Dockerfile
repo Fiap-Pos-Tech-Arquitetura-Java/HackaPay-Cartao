@@ -5,7 +5,7 @@ RUN apt-get install openjdk-17-jdk -y
 COPY . .
 
 RUN apt-get install maven -y
-RUN apt-get install -y git
+RUN apt-get install git -y --fix-missing
 
 RUN mkdir /goodbuy-security
 RUN git clone https://github.com/Fiap-Pos-Tech-Arquitetura-Java/HackaPay-Security /goodbuy-security
